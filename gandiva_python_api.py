@@ -1,14 +1,15 @@
 import requests
 import json
 
-#params
-gandiva_user = "domain\\user" #changeme
-gandiva_pass = "password" #changeme
-gandiva_api_url = "https://api-address/" #changeme
+# params
+gandiva_user = "domain\\user"  # changeme
+gandiva_pass = "password"  # changeme
+gandiva_api_url = "https://api-address/"  # changeme
 
-#get token
+
+# get token
 def gandiva_get_token():
-    headers = { 'Content-Type': 'x-www-form-urlencoded' }
+    headers = {'Content-Type': 'x-www-form-urlencoded'}
     data = {
         'grant_type': 'password',
         'username': gandiva_user,
@@ -17,40 +18,47 @@ def gandiva_get_token():
     response = requests.post(gandiva_api_url + "Token", data=data, headers=headers)
     return response.json()['access_token']
 
-#assign token
+
+# assign token
 gandiva_api_key = gandiva_get_token()
-#token header for API requests #requests.*(, headers=token)
+# token header for API requests # requests.*(, headers=token)
 token = {
     'Content-Type': 'application/json',
-    'Authorization': 'Bearer '+ gandiva_api_key
+    'Authorization': 'Bearer ' + gandiva_api_key
     }
 
-#get all departments
+
+# get all departments
 def gandiva_get_departments():
     response = requests.get(gandiva_api_url + "api/workNormative/departments", headers=token)
     return response.json()
 
-#get all catigories for department by id
+
+# get all catigories for department by id
 def gandiva_get_categories(department_id):
     response = requests.get(gandiva_api_url + "api/workNormative/departments/" + str(department_id) + "/categories", headers=token)
     return response.json()
 
-#get all types for category by id
+
+# get all types for category by id
 def gandiva_get_types(category_id):
     response = requests.get(gandiva_api_url + "api/workNormative/categories/" + str(category_id) + "/requestTypes", headers=token)
     return response.json()
 
-#get all job types for type by id
+
+# get all job types for type by id
 def gandiva_get_job_types(type_id):
     response = requests.get(gandiva_api_url + "api/workNormative/requestTypes/" + str(type_id) + "/jobTypes", headers=token)
     return response.json()
 
-#get request by id
+
+# get request by id
 def gandiva_get_request_by_id(request_id):
-    response = requests.get(gandiva_api_url + "api/Requests/" + str(request_id), headers = token)
+    response = requests.get(gandiva_api_url + "api/Requests/" + str(request_id), headers=token)
     return response.json()
 
-#print all unclosed requests for gandiva_user
+
+# print all unclosed requests for gandiva_user
 def gandiva_print_my_unclosed_requests():
     request_status_list = {
         '0': 'Отсутствует',
@@ -68,7 +76,7 @@ def gandiva_print_my_unclosed_requests():
         '12': 'Ожидает публикации плана',
         '13': 'На уточнении у исполнителя'
         }
-    response = requests.get(gandiva_api_url + "api/Requests?type=my&page=1&size=100&sort=id", headers=token)#, verify=False)
+    response = requests.get(gandiva_api_url + "api/Requests?type=my&page=1&size=100&sort=id", headers=token)
     print('Total: ' + str(response.json()['Total']) + "\n")
     for i in response.json()['Requests']:
         if i['Status'] != 9:
@@ -83,7 +91,7 @@ def gandiva_print_my_unclosed_requests():
             req_category = i['Category']['Name']
             req_type = i['RequestType']['Name']
             req_job_type = i['JobType']['Name']
-            req_desc = i['Description']   
+            req_desc = i['Description']
             print('Id: ' + str(req_id))
             print('Статус заявки: ' + str(req_status))
             print('Инициатор: ' + initiator_last_name + " " + initiator_first_name)
@@ -96,7 +104,8 @@ def gandiva_print_my_unclosed_requests():
             print('Описание: ' + req_desc)
             print("###")
 
-#print all requests for gandiva_user
+
+# print all requests for gandiva_user
 def gandiva_print_all_my_requests():
     request_status_list = {
         '0': 'Отсутствует',
@@ -114,7 +123,7 @@ def gandiva_print_all_my_requests():
         '12': 'Ожидает публикации плана',
         '13': 'На уточнении у исполнителя'
         }
-    response = requests.get(gandiva_api_url + "api/Requests?type=my&page=1&size=100&sort=id", headers=token)#, verify=False)
+    response = requests.get(gandiva_api_url + "api/Requests?type=my&page=1&size=100&sort=id", headers=token)
     print('Total: ' + str(response.json()['Total']) + "\n")
     for i in response.json()['Requests']:
         req_id = i['Id']
@@ -128,7 +137,7 @@ def gandiva_print_all_my_requests():
         req_category = i['Category']['Name']
         req_type = i['RequestType']['Name']
         req_job_type = i['JobType']['Name']
-        req_desc = i['Description']   
+        req_desc = i['Description']
         print('Id: ' + str(req_id))
         print('Статус заявки: ' + str(req_status))
         print('Инициатор: ' + initiator_last_name + " " + initiator_first_name)
